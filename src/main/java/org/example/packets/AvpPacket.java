@@ -43,11 +43,14 @@ public class AvpPacket {
     }
 
     public String getData() throws IOException{
-        if(isVendorSpecific())
-            System.out.println("Vendor Specific");
-        return buffWrapper.getString(avpMessage, 8, ((int) avpLength() - 8));
+        if(!isVendorSpecific())
+             return buffWrapper.getString(avpMessage, 8, ((int) avpLength() - 8));
 
+        return buffWrapper.getString(avpMessage, 8 + 4, ((int) avpLength() - 12));
+    }
 
+    public String getAttributeName(){
+        return "";
     }
 
 

@@ -83,7 +83,6 @@ public class DiameterPacket {
         long nextAVPLength = bufferWrapper.getInt(message, message.getReaderIndex() + 5,3);
         int padding = (int) (4 - (nextAVPLength % 4));
         if(padding == 4) padding =0;
-        System.out.println("NextAVP length: " + nextAVPLength + " Padding: " + padding);
         return new AvpPacket(message.readBytes((int) nextAVPLength + padding));
     }
 

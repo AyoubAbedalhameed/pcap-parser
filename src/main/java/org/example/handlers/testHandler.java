@@ -5,13 +5,16 @@ import io.pkts.buffer.Buffer;
 import io.pkts.packet.IPPacket;
 import io.pkts.packet.IPv4Packet;
 import io.pkts.packet.Packet;
+import io.pkts.packet.PacketParseException;
 import io.pkts.packet.sctp.SctpChunk;
 import io.pkts.packet.sctp.SctpPacket;
 import io.pkts.protocol.Protocol;
 import org.example.Request;
+import org.example.helpers.Printer;
 import org.example.packets.AvpPacket;
 import org.example.packets.DiameterPacket;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 public class testHandler implements PacketHandler {
@@ -28,8 +31,6 @@ public class testHandler implements PacketHandler {
     }
 
     private boolean scpFilter(SctpPacket sctpPacket){
-        System.out.println("scp Filter is running" );
-
         if(  (request.getSctpSPort() != -1) && sctpPacket.getSourcePort() != request.getSctpSPort()) return false;
         return (request.getSctpDPort()==-1) || (sctpPacket.getDestinationPort() == request.getSctpDPort());
     }
@@ -46,17 +47,26 @@ public class testHandler implements PacketHandler {
     }
 
 
-    public boolean nextPacket(Packet packet) throws IOException {
+    public boolean nextPacket(Packet packet) throws IOException{
         if(request.getpCount() < 1) return false;
 
         if (packet.hasProtocol(Protocol.SCTP)) {
             IPv4Packet iPv4Packet = (IPv4Packet) packet.getPacket(Protocol.IPv4);
             if(!ipFilter(iPv4Packet)) return true;
 
+            SctpPacket sctpPacket = null;
 
+            try {
+                sctpPacket = (SctpPacket) iPv4Packet.getPacket(Protocol.SCTP);
 
-            SctpPacket sctpPacket = (SctpPacket) iPv4Packet.getPacket(Protocol.SCTP);
+            }catch (PacketParseException e){
+                System.err.println("Error while parsing SCTP");
+                System.exit(-1);
+            }
+
             if(!scpFilter(sctpPacket)) return true;
+
+
 
 
 
@@ -73,21 +83,29 @@ public class testHandler implements PacketHandler {
             DiameterPacket diameterMessage = new DiameterPacket(diameter);
             if(!diameterFilter(diameterMessage)) return true;
 
-
-            AvpPacket avpPacket = diameterMessage.nextAVP();
-            if(!avpFilter(avpPacket)) return true;
-
+            request.packetCounterInc();
             request.pCountDecrement();
 
+            Printer.print(request, iPv4Packet, diameterMessage);
 
 
+            AvpPacket avpPacket = null;
+            while (true) {
+                try{
+                    avpPacket = diameterMessage.nextAVP();
 
+                } catch (Exception e){
+                    break;
+                }
 
+                if (!avpFilter(avpPacket)) continue;
+                request.avpCounterInc();
+                Printer.print(request, avpPacket);
+            }
 
-
+            request.resetAVPCounter();
 
         }
-
 
         return true;
     }

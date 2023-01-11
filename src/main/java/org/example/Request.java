@@ -10,6 +10,7 @@ public class Request{
     private long diamaterApplicationID = -1;
     private long avpCode = -1;
     private int pCount = 0;
+
     private int packetCounter = 0 ;
     private int avpCounter = 0;
 
@@ -24,9 +25,19 @@ public class Request{
         packetCounter++;
     }
 
+    protected void setpCount(int pCount) {
+        this.pCount = pCount;
+    }
+
     public void avpCounterInc(){
         avpCounter++;
     }
+
+
+    public void pCountDecrement(){
+        pCount-- ;
+    }
+
 
     public int getAvpCounter(){
         return this.avpCounter;
@@ -36,12 +47,16 @@ public class Request{
         return packetCounter;
     }
 
-    public int getpCount() {
+    public int getpCount(){
         return pCount;
     }
 
-    protected void setpCount(int pCount) {
-        this.pCount = pCount;
+    protected void setPacketCounter(int packetCounter) {
+        this.packetCounter = packetCounter;
+    }
+
+    protected void setAvpCounter(int avpCounter) {
+        this.avpCounter = avpCounter;
     }
 
     public boolean isVerbose() {
@@ -76,10 +91,6 @@ public class Request{
         return avpCode;
     }
 
-
-    public void pCountDecrement(){
-        pCount-- ;
-    }
 
 
 
@@ -118,5 +129,9 @@ public class Request{
 
     protected void setAvpCode(long avpCode) {
         this.avpCode = avpCode;
+    }
+
+    public void resetAVPCounter(){
+        avpCounter = 0;
     }
 }
