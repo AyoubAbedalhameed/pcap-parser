@@ -12,7 +12,7 @@ import java.io.PrintStream;
 public class Printer{
     private static void print(Request request, PrintStream printStream, String line, boolean head){
         if(head) printStream.print("\n\n#" + request.getPacketCounter() + " "); else
-            printStream.print("       " + request.getPacketCounter() + "." + request.getAvpCounter() +" -->");
+            printStream.print("       " + request.getPacketCounter() + "." + request.getAvpCounter() +" --> ");
 
         printStream.println(line);
 
@@ -47,7 +47,10 @@ public class Printer{
 
     public static void print(Request request, AvpPacket avpPacket) throws FileNotFoundException, IOException {
 
-        String line = avpPacket.getAttributeName() + ":   " + avpPacket.getData();
+        String attName = avpPacket.getAttributeName();
+        if(attName == null) attName = "Unknown";
+
+        String line = attName + ":   " + avpPacket.getData();
 
         if(request.getDesFile() == null){
             print(request, System.out,  line, false);
