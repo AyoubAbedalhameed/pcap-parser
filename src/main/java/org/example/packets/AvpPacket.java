@@ -1,12 +1,17 @@
 package org.example.packets;
-
 import io.pkts.buffer.Buffer;
 import org.example.helpers.PktBuffWrapper;
 import org.example.protocols.AVPFormat;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+
+/*AvpPacket objects simply wraps one full avp buffer, maybe the name is misleading (#Packet)
+ * but because it follows the same concept and usage of the DiameterPacket I preferred to use the same convention,
+ * multiple getters are offered or getting avp-specific fields,
+ * most of the gettors delegate a call for the BufferWrapper dependency, which is nothing
+ * but an abstraction of the io.pkts buffer, it just provides me my case-specific usages.*/
 
 public class AvpPacket {
     public final Buffer avpMessage;

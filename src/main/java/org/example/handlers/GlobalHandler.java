@@ -28,17 +28,20 @@ public class GlobalHandler implements PacketHandler {
         this.request = request;
     }
 
+    //Layer 3 filter.
     private boolean ipFilter(IPPacket iPv4Packet){
         if(  request.getSIP() != null && (!iPv4Packet.getSourceIP().equals(request.getSIP())) ) return false;
         return (request.getDIP()==null) || (iPv4Packet.getDestinationIP().equals(request.getDIP()));
     }
 
+    //Layer 5 filter.
     private boolean scpFilter(SctpPacket sctpPacket){
         if(  (request.getSctpSPort() != -1) && sctpPacket.getSourcePort() != request.getSctpSPort()) return false;
         return (request.getSctpDPort()==-1) || (sctpPacket.getDestinationPort() == request.getSctpDPort());
     }
 
 
+    //Layer 7 filter.
     private boolean diameterFilter(DiameterPacket diameterPacket) throws IOException{
         if(request.isReqOnl() && (!diameterPacket.isRequest())) return false;
         if(request.isRespOnly() && (diameterPacket.isRequest())) return false;
@@ -49,15 +52,19 @@ public class GlobalHandler implements PacketHandler {
         return ( request.getDiamaterApplicationID() == -1 || request.getDiamaterApplicationID() == diameterPacket.applicationID());
     }
 
+    // Layer 7 filter.
     private boolean avpFilter(AvpPacket avpPacket) throws IOException{
         return (request.getAvpCode() == -1 || request.getAvpCode() == avpPacket.avpCode());
     }
 
-
+@Override
     public boolean nextPacket(Packet packet) throws IOException{
         if(request.getpCount() < 1) return false;
 
+        //If the packet has no SCTP message, just skip it.
         if (packet.hasProtocol(Protocol.SCTP)) {
+
+            //apply layer 3 filter
             IPv4Packet iPv4Packet = (IPv4Packet) packet.getPacket(Protocol.IPv4);
             if(!ipFilter(iPv4Packet)) return true;
 
@@ -71,6 +78,7 @@ public class GlobalHandler implements PacketHandler {
                 System.exit(-1);
             }
 
+            //apply layer 5 filter
             if(!scpFilter(sctpPacket)) return true;
 
 
@@ -88,6 +96,8 @@ public class GlobalHandler implements PacketHandler {
 
             Buffer diameter = chunkData.readBytes(chunkData.getReadableBytes());
             DiameterPacket diameterMessage = new DiameterPacket(diameter);
+
+            //apply layer 7-diameter filter
             if(!diameterFilter(diameterMessage)) return true;
 
             request.packetCounterInc();
@@ -105,7 +115,10 @@ public class GlobalHandler implements PacketHandler {
                     break;
                 }
 
+                //apply layer 7-avp filter
                 if (!avpFilter(avpPacket)) continue;
+
+
                 request.avpCounterInc();
                 Printer.print(request, avpPacket);
             }
@@ -114,6 +127,7 @@ public class GlobalHandler implements PacketHandler {
 
         }
 
+        // Continue to the next packet.
         return true;
     }
 
