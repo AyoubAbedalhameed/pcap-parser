@@ -1,12 +1,10 @@
 package org.example.helpers;
 import io.pkts.buffer.Buffer;
-import io.pkts.packet.IPv4Packet;
-import org.example.protocols.DiameterPFields;
 import org.example.protocols.Framer;
 
 import java.io.IOException;
 
-
+/*This class is just a wrapper of the io.pkts API Buffer class.*/
 public class PktBuffWrapper{
 
 //

@@ -16,9 +16,13 @@ import org.example.packets.DiameterPacket;
 import java.io.IOException;
 import java.util.List;
 
+/*This class implements the io.pkts PacketHandler interface, it defines one method only (boolean nextPacket(..))
+* that is a dependency of the io.pkts pcap class, hence it has a Request dependency, new Handler should
+* be constructed for each new request */
+
 public class GlobalHandler implements PacketHandler {
 
-    private Request request;
+    private final Request request;
 
     public GlobalHandler(Request request){
         this.request = request;
