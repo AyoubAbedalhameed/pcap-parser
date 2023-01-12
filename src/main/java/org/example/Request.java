@@ -9,12 +9,36 @@ public class Request{
     private long diameterCommandCode = -1;
     private long diamaterApplicationID = -1;
     private long avpCode = -1;
-    private int pCount = 0;
+    private int pCount = 50;
 
     private int packetCounter = 0 ;
     private int avpCounter = 0;
 
     private String desFile;
+
+    private boolean reqOnl;
+
+    private boolean respOnly;
+
+    public boolean isReqOnl() {
+        return reqOnl;
+    }
+
+    protected void setReqOnl(boolean reqOnl) {
+        this.reqOnl = reqOnl;
+        if(reqOnl)
+             this.respOnly=false;
+    }
+
+    public boolean isRespOnly() {
+        return respOnly;
+    }
+
+    protected void setRespOnly(boolean respOnly) {
+        this.respOnly = respOnly;
+        if(respOnly)
+            this.reqOnl = false;
+    }
 
     public String getDesFile(){
         return this.desFile;

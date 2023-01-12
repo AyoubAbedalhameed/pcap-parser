@@ -44,11 +44,18 @@ public class AvpPacket {
         else return 0;
     }
 
-    public String getData() throws IOException{
-        if(!isVendorSpecific())
-             return buffWrapper.getString(avpMessage, 8, ((int) avpLength() - 8));
+    public String getData(boolean string) throws IOException{
+        if(string){
+            if(!isVendorSpecific())
+                 return buffWrapper.getString(avpMessage, 8, ((int) avpLength() - 8));
 
-        return buffWrapper.getString(avpMessage, 8 + 4, ((int) avpLength() - 12));
+            return buffWrapper.getString(avpMessage, 8 + 4, ((int) avpLength() - 12));
+        }
+
+        if(!isVendorSpecific())
+            return buffWrapper.getVal(avpMessage, 8, ((int) avpLength() - 8));
+
+        return buffWrapper.getVal(avpMessage, 8 + 4, ((int) avpLength() - 12));
     }
 
     public String getAttributeName() throws IOException{
@@ -70,8 +77,8 @@ public class AvpPacket {
         attributeNames.put(260, "Vendor-Specific-Application-Id");
         attributeNames.put(261, "Redirect-Host-Usage");
         attributeNames.put(262, "Redirect-Max-Cache-Time");
-        attributeNames.put(263, "Session-Id");
-        attributeNames.put(264, "Origin-Host");
+        attributeNames.put(263, "Session-Id#");
+        attributeNames.put(264, "Origin-Host#");
         attributeNames.put(265, "Supported-Vendor-Id");
         attributeNames.put(266, "Vendor-Id");
         attributeNames.put(267, "Firmware-Version");
@@ -82,7 +89,10 @@ public class AvpPacket {
         attributeNames.put(272, "Multi-Round-Time-Out");
         attributeNames.put(273, "Disconnect-Cause");
         attributeNames.put(274, "Auth-Request-Type");
-        attributeNames.put(296, "Origin-Realm");
+        attributeNames.put(296, "Origin-Realm#");
+        attributeNames.put(283, "Destination-Realm#");
+        attributeNames.put(293, "Destination-Host#");
+        attributeNames.put(282, "Route-Record#");
     }
 
 

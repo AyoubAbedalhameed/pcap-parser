@@ -47,6 +47,7 @@ public class PktBuffWrapper{
 
 
 
+
     public long getInt(Buffer buffer, int index, int fLength) throws IOException {
 
         if( fLength < 1 || fLength > 4 )
@@ -82,6 +83,16 @@ public class PktBuffWrapper{
         StringBuilder data = new StringBuilder();
         for (int i= index; i< index+ length; i++){
             data.append((char) buffer.getByte(i));
+        }
+
+        return data.toString();
+    }
+
+
+    public String getVal(Buffer buffer, int index, int length) throws IOException{
+        StringBuilder data = new StringBuilder();
+        for (int i= index; i< index+ length; i++){
+            data.append(buffer.getByte(i));
         }
 
         return data.toString();

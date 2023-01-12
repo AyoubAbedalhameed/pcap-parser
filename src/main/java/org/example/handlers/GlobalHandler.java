@@ -14,14 +14,13 @@ import org.example.helpers.Printer;
 import org.example.packets.AvpPacket;
 import org.example.packets.DiameterPacket;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
-public class testHandler implements PacketHandler {
+public class GlobalHandler implements PacketHandler {
 
     private Request request;
 
-    public testHandler(Request request){
+    public GlobalHandler(Request request){
         this.request = request;
     }
 
@@ -37,6 +36,10 @@ public class testHandler implements PacketHandler {
 
 
     private boolean diameterFilter(DiameterPacket diameterPacket) throws IOException{
+        if(request.isReqOnl() && (!diameterPacket.isRequest())) return false;
+        if(request.isRespOnly() && (diameterPacket.isRequest())) return false;
+
+
         if( (request.getDiameterCommandCode() != -1) && request.getDiameterCommandCode() != diameterPacket.commandCode()) return false;
 
         return ( request.getDiamaterApplicationID() == -1 || request.getDiamaterApplicationID() == diameterPacket.applicationID());
@@ -68,11 +71,11 @@ public class testHandler implements PacketHandler {
 
 
 
-
-
             List<SctpChunk> chunksList =  sctpPacket.getChunks();
             Buffer chunkData = chunksList.get(0).getValue();
 
+            //TODO: Print the following fields in the verbose mode.
+            //Verbose mode is not implemented yet
             Buffer chunkTSN = chunkData.readBytes(4);
             Buffer chunkSID = chunkData.readBytes(2);
             Buffer chunkSN = chunkData.readBytes(2);

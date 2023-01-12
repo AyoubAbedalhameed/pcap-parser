@@ -5,9 +5,7 @@ import org.example.Request;
 import org.example.packets.AvpPacket;
 import org.example.packets.DiameterPacket;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 
 public class Printer{
     private static void print(Request request, PrintStream printStream, String line, boolean head){
@@ -24,7 +22,7 @@ public class Printer{
             print(request, System.out, line, head);
         }
         else{
-            PrintStream printStream = new PrintStream(request.getDesFile());
+            PrintStream printStream = new PrintStream(new FileOutputStream(request.getDesFile(), true));
             print(request, printStream, line, head);
             printStream.close();
         }
@@ -36,27 +34,32 @@ public class Printer{
             print(request, System.out,  line, true);
         }
         else{
-            PrintStream printStream = new PrintStream(request.getDesFile());
+            PrintStream printStream = new PrintStream(new FileOutputStream(request.getDesFile(), true));
             print(request, printStream,  line, true);
             printStream.close();
         }
     }
 
 
-
-
     public static void print(Request request, AvpPacket avpPacket) throws FileNotFoundException, IOException {
+        String attributeName = avpPacket.getAttributeName();
+        if(attributeName == null) attributeName = "Unknown-";
+        String data;
 
-        String attName = avpPacket.getAttributeName();
-        if(attName == null) attName = "Unknown";
+        if(attributeName.charAt(attributeName.length()-1) == '#')
+            data = avpPacket.getData(true);
+        else data = avpPacket.getData(false);
 
-        String line = attName + ":   " + avpPacket.getData();
+        StringBuilder att = new StringBuilder(attributeName);
+        att.setLength(att.length() -1);
+        attributeName = att.toString();
+        String line = attributeName + ":   " + data;
 
         if(request.getDesFile() == null){
             print(request, System.out,  line, false);
         }
         else{
-            PrintStream printStream = new PrintStream(request.getDesFile());
+            PrintStream printStream = new PrintStream(new FileOutputStream(request.getDesFile(), true));
             print(request, printStream,  line, false);
             printStream.close();
         }
