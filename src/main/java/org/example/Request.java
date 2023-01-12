@@ -1,5 +1,8 @@
 package org.example;
 
+/* Request objects are constructed and created in the main class for each new request, contain requests parameters/options
+* Setters are protected, request parameters can be changed in the main class only*/
+
 public class Request{
     private boolean verbose;
     private String sIP;

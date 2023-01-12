@@ -8,15 +8,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/*DiameterPacket objects simply wraps one full diameter message buffer, multiple getters are offered
+* for getting diameter-specific fields, most of the gettors delegate a call for the BufferWrapper dependency, which is nothing
+* but an abstraction of the io.pkts buffer, it just provides me my case-specific usages.*/
 public class DiameterPacket {
     public final Buffer message;
     private final PktBuffWrapper bufferWrapper ;
-
-
-
-
-
-
 
     public DiameterPacket(Buffer message){
         this.message = message;

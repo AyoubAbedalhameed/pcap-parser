@@ -6,6 +6,9 @@ import org.example.packets.AvpPacket;
 import org.example.packets.DiameterPacket;
 import java.io.*;
 
+
+
+/*This class is just used for printing/formatting the output*/
 public class Printer{
     private static void print(Request request, PrintStream printStream, String line, boolean head){
         if(head) printStream.print("\n\n#" + request.getPacketCounter() + " "); else
