@@ -57,6 +57,13 @@ public class Main {
         options.addOption(commandCode);
 
 
+        Option avpCode = Option.builder("avp").longOpt("attribute-value-code")
+                .hasArg(true)
+                .argName("attribute-value-id")
+                .desc("Filter packets according to the specified AVP number").build();
+        options.addOption(avpCode);
+
+
         Option maxPCount = Option.builder("mc").longOpt("max-count")
                 .hasArg(true)
                 .argName("mc")
@@ -114,9 +121,13 @@ public class Main {
         try{
             cmd = parser.parse(options, args);
 
-            //The following is just simple validation of the options' combination, we can use the SDK
+            /*The following is just simple validation of the options' combination, we can use the API for that but the
+            * following is the only bad combination of the current available options*/
             if(cmd.hasOption("qo") && cmd.hasOption("so")) throw new ParseException("Wrong options combination");
 
+
+
+            //Setting the request parameters.
             request.setRespOnly(cmd.hasOption("so"));
             request.setReqOnl(cmd.hasOption("qo"));
             request.setVerbose(cmd.hasOption("v"));
@@ -131,29 +142,30 @@ public class Main {
                 request.setSctpSPort(Integer.parseInt(cmd.getOptionValue("sp")));
 
             if (cmd.hasOption("dp"))
-                request.setSctpDPort(Integer.parseInt(cmd.getOptionValue("sip")));
+                request.setSctpDPort(Integer.parseInt(cmd.getOptionValue("dp")));
 
             if (cmd.hasOption("dcc"))
-                request.setAvpCode(Integer.parseInt(cmd.getOptionValue("sip")));
+                request.setDiameterCommandCode(Integer.parseInt(cmd.getOptionValue("dcc")));
+
+            if (cmd.hasOption("avp"))
+                request.setAvpCode(Integer.parseInt(cmd.getOptionValue("avp")));
 
             if (cmd.hasOption("mc"))
                 request.setpCount(Integer.parseInt(cmd.getOptionValue("mc")));
 
             if (cmd.hasOption("r"))
-                request.setDesFile(cmd.getOptionValue("file"));
+                request.setDesFile(cmd.getOptionValue("r"));
 
 
-
-
-        }catch (ParseException e){
+        } catch (ParseException e){
             System.out.println(e.getMessage());
             helpFormatter.printHelp(" " ,options);
-            System.exit(0);
+            System.exit(-1);
         }
 
-
-
-
+        /* Here I used pkts.io which is a native lib for parsing pcap, considered as an alternatives for other java (non-native)
+        * c-pcap-lib wrappers such as parse4j, jparser, jnetparser, etc.
+        * for more details about pkts.io visit:  https://github.com/aboutsip/pkts*/
         try {
             Pcap pcap = Pcap.openStream(cmd.getOptionValue("pcap"));
             pcap.loop(new GlobalHandler(request));
@@ -168,10 +180,7 @@ public class Main {
         }
 
 
-
-
     }
-
 
 
 }

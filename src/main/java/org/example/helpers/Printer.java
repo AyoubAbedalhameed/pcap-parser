@@ -4,7 +4,6 @@ import io.pkts.packet.IPv4Packet;
 import org.example.Request;
 import org.example.packets.AvpPacket;
 import org.example.packets.DiameterPacket;
-
 import java.io.*;
 
 public class Printer{
